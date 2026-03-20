@@ -368,7 +368,9 @@ def pack(
         typer.echo(f"No preset files found in {output_dir}.", err=True)
         raise typer.Exit(1)
 
-    zip_name = name.lower().replace(" ", "-") + ".zip"
+    import re
+
+    zip_name = re.sub(r"[^a-z0-9_-]", "-", name.lower()).strip("-") + ".zip"
     zip_path = output_dir / zip_name
 
     if dry_run:

@@ -2,7 +2,6 @@
 
 import json
 import os
-import stat
 import time
 import webbrowser
 from pathlib import Path
@@ -67,6 +66,7 @@ def _save_tokens(
         fullname: User's full name.
     """
     TOKEN_DIR.mkdir(parents=True, exist_ok=True)
+    TOKEN_DIR.chmod(0o700)
     data = {
         "token": token,
         "token_secret": token_secret,
@@ -74,9 +74,10 @@ def _save_tokens(
         "user_nsid": user_nsid,
         "fullname": fullname,
     }
-    with open(TOKEN_FILE, "w", encoding="utf-8") as f:
+    # Write with restricted permissions from the start (no world-readable window)
+    fd = os.open(TOKEN_FILE, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
-    TOKEN_FILE.chmod(stat.S_IRUSR | stat.S_IWUSR)  # 600 permissions
 
 
 def _load_tokens() -> dict[str, str] | None:

@@ -286,10 +286,14 @@ def populate_local_cache(inventory: Inventory, cache_dir: Path) -> None:
 
             from urllib.parse import unquote
 
-            original_path = Path(unquote(url[len("file://") :]))
+            original_path = Path(unquote(url[len("file://") :])).resolve()
 
             if not original_path.exists():
                 typer.echo(f"  Warning: Source file missing: {original_path}")
+                continue
+
+            if not original_path.is_file():
+                typer.echo(f"  Warning: Not a regular file: {original_path}")
                 continue
 
             link_name = f"{record.photo_id}{original_path.suffix}"

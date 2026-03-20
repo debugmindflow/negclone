@@ -1,5 +1,6 @@
 """Analysis tools for NegClone: fingerprint comparison and report generation."""
 
+import html
 import math
 from datetime import datetime
 from pathlib import Path
@@ -395,9 +396,11 @@ def _render_stock_card(fp: StockFingerprint) -> str:
     def _fmt_rgb(vals: tuple[float, float, float]) -> str:
         return f"R:{vals[0]:+.4f} G:{vals[1]:+.4f} B:{vals[2]:+.4f}"
 
+    safe_stock = html.escape(fp.stock)
+
     return f"""\
 <div class="card">
-  <h2>{fp.stock}</h2>
+  <h2>{safe_stock}</h2>
   <table>
     <tr><td class="section-label" colspan="2">Grain</td></tr>
     <tr><td>Intensity</td><td>{fp.grain.mean_intensity:.4f}</td></tr>
@@ -440,7 +443,7 @@ def _render_similarity_matrix(
     if n < 2:
         return ""
 
-    header_cells = "".join(f"<th>{fp.stock}</th>" for fp in fingerprints)
+    header_cells = "".join(f"<th>{html.escape(fp.stock)}</th>" for fp in fingerprints)
     rows: list[str] = []
     for i in range(n):
         cells: list[str] = []
@@ -453,7 +456,8 @@ def _render_similarity_matrix(
             else:
                 css_class = "sim-low"
             cells.append(f'<td class="{css_class}">{score:.1%}</td>')
-        rows.append(f"<tr><th>{fingerprints[i].stock}</th>{''.join(cells)}</tr>")
+        safe_name = html.escape(fingerprints[i].stock)
+        rows.append(f"<tr><th>{safe_name}</th>{''.join(cells)}</tr>")
 
     return f"""\
 <div class="matrix-section">

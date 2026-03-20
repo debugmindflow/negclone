@@ -35,11 +35,13 @@ jobs:
           echo "Package version: $VERSION"
 
       - name: Verify tag matches version
+        env:
+          INPUT_TAG: ${{ github.event.inputs.tag || github.ref_name }}
+          PKG_VERSION: ${{ steps.version.outputs.version }}
         run: |
-          TAG="${{ github.event.inputs.tag || github.ref_name }}"
-          TAG_VERSION="${TAG#v}"
-          if [ "$TAG_VERSION" != "${{ steps.version.outputs.version }}" ]; then
-            echo "Tag ($TAG_VERSION) does not match pyproject.toml version (${{ steps.version.outputs.version }})"
+          TAG_VERSION="${INPUT_TAG#v}"
+          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+            echo "Tag ($TAG_VERSION) does not match pyproject.toml version ($PKG_VERSION)"
             exit 1
           fi
 
@@ -56,7 +58,7 @@ jobs:
         run: twine upload dist/*
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.inputs.tag || github.ref_name }}
           generate_release_notes: true

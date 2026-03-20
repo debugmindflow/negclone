@@ -1,9 +1,13 @@
 """Pydantic v2 data models for NegClone."""
 
+import re
 from datetime import datetime
 from pathlib import Path
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+
+# Stock name must be safe for filesystem use
+STOCK_NAME_PATTERN: re.Pattern[str] = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
 
 # Known film stocks for auto-detection
 KNOWN_STOCKS: list[str] = [
@@ -63,6 +67,16 @@ class FlickrPhotoRecord(BaseModel):
     height: int | None = None
     source: str = "flickr"  # "flickr" or "local"
     local_path: Path | None = None
+
+    @field_validator("stock")
+    @classmethod
+    def validate_stock_name(cls, v: str) -> str:
+        """Ensure stock name is filesystem-safe."""
+        if not STOCK_NAME_PATTERN.match(v):
+            raise ValueError(
+                f"Stock name '{v}' contains unsafe characters. Must match [a-z0-9][a-z0-9_-]*"
+            )
+        return v
 
 
 class Inventory(BaseModel):
@@ -124,3 +138,13 @@ class StockFingerprint(BaseModel):
     confidence: float  # 0-1, based on IQR spread
     generated_at: datetime = Field(default_factory=datetime.now)
     scanner_model: str | None = None
+
+    @field_validator("stock")
+    @classmethod
+    def validate_stock_name(cls, v: str) -> str:
+        """Ensure stock name is filesystem-safe."""
+        if not STOCK_NAME_PATTERN.match(v):
+            raise ValueError(
+                f"Stock name '{v}' contains unsafe characters. Must match [a-z0-9][a-z0-9_-]*"
+            )
+        return v
