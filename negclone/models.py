@@ -45,9 +45,12 @@ STOCK_ALIASES: dict[str, str] = {
     "cinestill800": "cinestill800t",
 }
 
+# Image file extensions supported for scanning
+IMAGE_EXTENSIONS: set[str] = {".jpg", ".jpeg", ".png", ".tif", ".tiff", ".dng"}
+
 
 class FlickrPhotoRecord(BaseModel):
-    """A photo record fetched from Flickr."""
+    """A photo record — from Flickr or local filesystem."""
 
     photo_id: str
     title: str
@@ -58,6 +61,8 @@ class FlickrPhotoRecord(BaseModel):
     url_original: str
     width: int | None = None
     height: int | None = None
+    source: str = "flickr"  # "flickr" or "local"
+    local_path: Path | None = None
 
 
 class Inventory(BaseModel):
@@ -85,6 +90,9 @@ class GrainProfile(BaseModel):
     mean_intensity: float
     size_estimate: float  # pixels
     clumping_factor: float  # 0-1
+    peak_frequency: float = 0.0  # dominant spatial frequency (cycles/pixel)
+    spectral_slope: float = 0.0  # log-log power spectrum slope
+    spectral_centroid: float = 0.0  # weighted mean frequency
 
 
 class ColorBias(BaseModel):
@@ -102,6 +110,7 @@ class TonalRolloff(BaseModel):
     highlight_compression: float
     midtone_contrast: float
     curve_coefficients: list[float]  # polynomial coefficients
+    curve_points: list[tuple[float, float]] = Field(default_factory=list)  # (in, out) 0-255
 
 
 class StockFingerprint(BaseModel):
@@ -114,3 +123,4 @@ class StockFingerprint(BaseModel):
     tone: TonalRolloff
     confidence: float  # 0-1, based on IQR spread
     generated_at: datetime = Field(default_factory=datetime.now)
+    scanner_model: str | None = None

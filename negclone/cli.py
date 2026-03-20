@@ -54,6 +54,10 @@ def auth(
 
 @app.command()
 def inventory(
+    local: Annotated[
+        Path | None,
+        typer.Option("--local", "-l", help="Local scan directory (skip Flickr)"),
+    ] = None,
     user: Annotated[
         str | None,
         typer.Option("--user", help="Flickr username or NSID"),
@@ -76,18 +80,32 @@ def inventory(
     ] = Path("inventory.json"),
     verbose: Annotated[bool, typer.Option("--verbose", help="Enable debug output")] = False,
 ) -> None:
-    """Fetch and catalog photos from Flickr, grouped by film stock."""
-    from negclone.inventory import build_inventory
+    """Fetch and catalog photos from Flickr or a local directory, grouped by film stock."""
+    if local and user:
+        typer.echo("Cannot use --local and --user together.", err=True)
+        raise typer.Exit(1)
 
     try:
-        build_inventory(
-            user=user,
-            tags=tags,
-            min_date=min_date,
-            tag_map_path=tag_map,
-            output=output,
-            verbose=verbose,
-        )
+        if local:
+            from negclone.local_inventory import build_local_inventory
+
+            build_local_inventory(
+                scan_dir=local,
+                tag_map_path=tag_map,
+                output=output,
+                verbose=verbose,
+            )
+        else:
+            from negclone.inventory import build_inventory
+
+            build_inventory(
+                user=user,
+                tags=tags,
+                min_date=min_date,
+                tag_map_path=tag_map,
+                output=output,
+                verbose=verbose,
+            )
     except Exception as e:
         typer.echo(f"Inventory failed: {e}", err=True)
         raise typer.Exit(1) from e
@@ -110,7 +128,7 @@ def download(
     ] = Path("cache"),
     verbose: Annotated[bool, typer.Option("--verbose", help="Enable debug output")] = False,
 ) -> None:
-    """Download original images from Flickr to a local cache."""
+    """Download original images from Flickr (or symlink local files) to a cache."""
     from negclone.downloader import download_photos
     from negclone.inventory import load_inventory
 
@@ -128,17 +146,26 @@ def download(
             raise typer.Exit(1)
 
         records = inv.stocks[stock_name]
-        typer.echo(
-            f"Downloading {stock_name} ({len(records)} available, sampling {sample_size})..."
-        )
-        download_photos(
-            records=records,
-            stock=stock_name,
-            sample_size=sample_size,
-            cache_dir=cache_dir,
-            verbose=verbose,
-        )
-        typer.echo(f"Done: {stock_name}")
+
+        # Check if local source — symlink instead of download
+        if records and records[0].source == "local":
+            from negclone.local_inventory import populate_local_cache
+
+            typer.echo(f"Linking {stock_name} ({len(records)} local files)...")
+            populate_local_cache(inv, cache_dir)
+            typer.echo(f"Done: {stock_name}")
+        else:
+            typer.echo(
+                f"Downloading {stock_name} ({len(records)} available, sampling {sample_size})..."
+            )
+            download_photos(
+                records=records,
+                stock=stock_name,
+                sample_size=sample_size,
+                cache_dir=cache_dir,
+                verbose=verbose,
+            )
+            typer.echo(f"Done: {stock_name}")
 
 
 @app.command()
@@ -183,7 +210,6 @@ def fingerprint(
             typer.echo(f"Stock '{stock_name}' not found in inventory.", err=True)
             raise typer.Exit(1)
 
-        # Find cached images
         stock_cache = cache_dir / stock_name
         if not stock_cache.exists():
             typer.echo(
@@ -237,10 +263,12 @@ def generate(
 
     valid_formats = ("darktable", "lightroom", "both")
     if output_format not in valid_formats:
-        typer.echo(f"Invalid format: {output_format}. Use darktable, lightroom, or both.", err=True)
+        typer.echo(
+            f"Invalid format: {output_format}. Use darktable, lightroom, or both.",
+            err=True,
+        )
         raise typer.Exit(1)
 
-    # Check output dir
     if not dry_run:
         output_dir.mkdir(parents=True, exist_ok=True)
         if not force and any(output_dir.iterdir()):
@@ -263,6 +291,55 @@ def generate(
         else:
             path = generate_xmp(fp, output_dir)
             typer.echo(f"Generated Lightroom preset: {path}")
+
+
+@app.command()
+def compare(
+    fingerprint_a: Annotated[Path, typer.Argument(help="First fingerprint JSON")],
+    fingerprint_b: Annotated[Path, typer.Argument(help="Second fingerprint JSON")],
+) -> None:
+    """Compare two film stock fingerprints side-by-side."""
+    from negclone.analysis import print_comparison
+    from negclone.fingerprint import load_fingerprint
+
+    try:
+        fp_a = load_fingerprint(fingerprint_a)
+        fp_b = load_fingerprint(fingerprint_b)
+    except Exception as e:
+        typer.echo(f"Failed to load fingerprint: {e}", err=True)
+        raise typer.Exit(1) from e
+
+    print_comparison(fp_a, fp_b)
+
+
+@app.command()
+def report(
+    fingerprint_files: Annotated[
+        list[Path],
+        typer.Argument(help="Fingerprint JSON files to include"),
+    ],
+    output: Annotated[
+        Path,
+        typer.Option("--output", "-o", help="Output HTML file"),
+    ] = Path("report.html"),
+) -> None:
+    """Generate an HTML report comparing all fingerprints."""
+    from negclone.analysis import generate_report
+    from negclone.fingerprint import load_fingerprint
+
+    fingerprints = []
+    for fp_path in fingerprint_files:
+        try:
+            fingerprints.append(load_fingerprint(fp_path))
+        except Exception as e:
+            typer.echo(f"Warning: Failed to load {fp_path}: {e}", err=True)
+
+    if not fingerprints:
+        typer.echo("No valid fingerprints to report on.", err=True)
+        raise typer.Exit(1)
+
+    generate_report(fingerprints, output)
+    typer.echo(f"Report generated: {output}")
 
 
 @app.command()
@@ -301,7 +378,6 @@ def pack(
             typer.echo(f"  {f.name}")
         return
 
-    # Build README.txt content
     readme_lines = [
         f"{name}",
         "=" * len(name),
@@ -343,7 +419,6 @@ def pack(
 
     readme_content = "\n".join(readme_lines)
 
-    # Create zip
     with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
         zf.writestr("README.txt", readme_content)
         for f in all_files:
@@ -351,7 +426,6 @@ def pack(
 
     typer.echo(f"Pack created: {zip_path} ({len(all_files)} presets)")
 
-    # Print Gumroad upload checklist
     typer.echo("\nGumroad Upload Checklist:")
     typer.echo(f"  [ ] Upload {zip_path}")
     typer.echo(f"  [ ] Set product name: {name}")

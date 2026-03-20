@@ -85,23 +85,26 @@ def generate_xmp(fingerprint: StockFingerprint, output_dir: Path) -> Path:
 def _add_tone_curve(desc: ET.Element, fp: StockFingerprint) -> None:
     """Add tone curve settings to the XMP description.
 
+    Uses PCHIP spline points when available, falls back to 5-point approximation.
+
     Args:
         desc: RDF Description element.
         fp: StockFingerprint.
     """
-    # Build a simple 5-point tone curve from the rolloff data
-    # Points are (input, output) pairs, 0-255
-    shadow_lift_val = int(fp.tone.shadow_lift * 255)
-    highlight_comp = int(fp.tone.highlight_compression * 255)
-
-    # Tone curve points: shadows lifted, highlights compressed
-    points = [
-        "0, " + str(min(255, shadow_lift_val)),
-        "64, " + str(min(255, 64 + shadow_lift_val // 2)),
-        "128, 128",
-        "192, " + str(max(0, 192 - highlight_comp // 2)),
-        "255, " + str(max(0, 255 - highlight_comp)),
-    ]
+    if fp.tone.curve_points:
+        # Use the spline-derived curve points directly
+        points = [f"{int(x)}, {int(y)}" for x, y in fp.tone.curve_points]
+    else:
+        # Fallback: 5-point approximation from scalar values
+        shadow_lift_val = int(fp.tone.shadow_lift * 255)
+        highlight_comp = int(fp.tone.highlight_compression * 255)
+        points = [
+            "0, " + str(min(255, shadow_lift_val)),
+            "64, " + str(min(255, 64 + shadow_lift_val // 2)),
+            "128, 128",
+            "192, " + str(max(0, 192 - highlight_comp // 2)),
+            "255, " + str(max(0, 255 - highlight_comp)),
+        ]
 
     tone_curve = ET.SubElement(desc, f"{{{NS_CRS}}}ToneCurvePV2012")
     seq = ET.SubElement(tone_curve, f"{{{NS_RDF}}}Seq")
