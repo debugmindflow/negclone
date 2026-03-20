@@ -1,5 +1,9 @@
 # NegClone
 
+[![PyPI version](https://img.shields.io/pypi/v/negclone.svg)](https://pypi.org/project/negclone/)
+[![Python 3.12+](https://img.shields.io/pypi/pyversions/negclone.svg)](https://pypi.org/project/negclone/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 NegClone is a Python CLI tool that analyzes your film photography archive (on Flickr or locally), extracts a grain and color fingerprint per film stock, and auto-generates Darktable `.dtstyle` and Lightroom/ACR `.xmp` preset files. The result is a publishable preset pack derived from real scanned negatives — not synthetic emulations.
 
 ## Use Cases
@@ -28,13 +32,23 @@ Only needed if you're pulling photos from Flickr (not needed for local scans):
 
 ## Install
 
+From PyPI:
+
 ```bash
-uv pip install -e .
+pip install negclone
 ```
 
-Or with dev dependencies:
+Or with [uv](https://github.com/astral-sh/uv):
 
 ```bash
+uv pip install negclone
+```
+
+For development:
+
+```bash
+git clone https://github.com/pfrederiksen/negclone.git
+cd negclone
 uv pip install -e ".[dev]"
 ```
 
